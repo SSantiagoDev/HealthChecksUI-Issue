@@ -11,12 +11,18 @@ namespace ProductService;
 
 public class Startup
 {
+    public static Random rnd = new(5);
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHealthChecks()
-            //.AddWindowsServiceHealthCheck("Windows Update", s => s.Status == ServiceControllerStatus.Running)
-            .AddCheck(name: "TEST", () => HealthCheckResult.Unhealthy())
-            .AddCheck(name: "Random", () => DateTime.UtcNow.Second % 2 == 0 ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy());
+            .AddCheck(name: "Always Unhealthy", () => HealthCheckResult.Unhealthy())
+            .AddCheck(name: "Random",
+                () =>
+                {
+                    int rndValue = rnd.Next(0, 10);
+                    return rndValue % 2 == 0 ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy();
+                });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

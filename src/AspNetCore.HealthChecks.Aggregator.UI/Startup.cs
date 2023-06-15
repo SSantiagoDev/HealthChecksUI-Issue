@@ -12,6 +12,7 @@ namespace AspNetCore.HealthChecks.Aggregator.UI;
 public class Startup
 {
     public IConfiguration Configuration { get; }
+    public static Random rnd = new(5);
 
     public Startup(IConfiguration configuration)
     {
@@ -29,13 +30,16 @@ public class Startup
             {
                 settings.AddHealthCheckEndpoint(service.Name, service.Url);
             });
-        })
-            .AddSqlServerStorage("Server=dbdevsch;Trusted_Connection=True;MultipleActiveResultSets=true;Database=HealthChecksTests");
-        //.AddInMemoryStorage();
+        }).AddInMemoryStorage();
 
         services.AddHealthChecks()
-            .AddCheck(name: "TEST", () => HealthCheckResult.Degraded())
-            .AddCheck(name: "Random", () => DateTime.UtcNow.Second % 2 == 0 ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy());
+            .AddCheck(name: "Always Degraded", () => HealthCheckResult.Degraded())
+            .AddCheck(name: "Random",
+                () =>
+                {
+                    int rndValue = rnd.Next(0, 10);
+                    return rndValue % 2 == 0 ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy();
+                });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
