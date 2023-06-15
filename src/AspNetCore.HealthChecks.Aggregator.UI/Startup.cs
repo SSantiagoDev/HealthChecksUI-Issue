@@ -29,9 +29,12 @@ public class Startup
             {
                 settings.AddHealthCheckEndpoint(service.Name, service.Url);
             });
-        }).AddInMemoryStorage();
+        })
+            .AddSqlServerStorage("Server=dbdevsch;Trusted_Connection=True;MultipleActiveResultSets=true;Database=HealthChecksTests");
+        //.AddInMemoryStorage();
 
         services.AddHealthChecks()
+            .AddCheck(name: "TEST", () => HealthCheckResult.Degraded())
             .AddCheck(name: "Random", () => DateTime.UtcNow.Second % 2 == 0 ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy());
     }
 

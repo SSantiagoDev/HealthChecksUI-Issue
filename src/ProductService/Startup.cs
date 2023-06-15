@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.ServiceProcess;
 
 namespace ProductService;
 
@@ -15,7 +14,8 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHealthChecks()
-            .AddWindowsServiceHealthCheck("Fax", s => s.Status == ServiceControllerStatus.Running)
+            //.AddWindowsServiceHealthCheck("Windows Update", s => s.Status == ServiceControllerStatus.Running)
+            .AddCheck(name: "TEST", () => HealthCheckResult.Unhealthy())
             .AddCheck(name: "Random", () => DateTime.UtcNow.Second % 2 == 0 ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy());
     }
 
